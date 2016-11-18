@@ -2,6 +2,7 @@ PhpServerView = require './php-server-view'
 PhpServerServer = require './php-server-server'
 open = require 'open'
 fs = require 'fs'
+{CompositeDisposable} = require 'atom'
 
 module.exports =
   config:
@@ -91,7 +92,7 @@ module.exports =
     @view.attach()
 
     editor = atom.workspace.getActivePane()
-    @subscriptions = new CompositeDisposable()
+    @subscriptions = new CompositeDisposable
     @subscriptions.add(
       @view.addMessage "changed", atom.config.get('php-server.expandOnLog')
     );
