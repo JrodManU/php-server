@@ -39,6 +39,7 @@ module.exports =
 
   server: null
   view: null
+  subscriptions: null
 
 
   activate: ->
@@ -48,7 +49,6 @@ module.exports =
     atom.commands.add 'atom-workspace', "php-server:start-document", => @startDocument()
     atom.commands.add 'atom-workspace', "php-server:clear", => @clear()
     atom.commands.add 'atom-workspace', "php-server:stop", => @stop()
-
 
   deactivate: ->
     @stop()
@@ -89,6 +89,12 @@ module.exports =
       )
 
     @view.attach()
+
+    editor = atom.workspace.getActivePane()
+    @subscriptions = new CompositeDisposable()
+    @subscriptions.add(
+      @view.addMessage "changed", atom.config.get('php-server.expandOnLog')
+    );
 
     # Collapse view if expandOnLog is set to none
     if atom.config.get('php-server.expandOnLog') == 'none'
@@ -151,9 +157,11 @@ module.exports =
 
     @view?.clear()
     @view?.detach()
+    @subscriptions.dispose()
 
     @server = null
     @view = null
+    @subscriptions = null
 
 
   clear: ->
